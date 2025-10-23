@@ -8,7 +8,7 @@ import { createClient } from '@supabase/supabase-js';
 import { Checkbox } from 'expo-checkbox';
 import { Image } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StatusBar, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -21,6 +21,7 @@ const generateDates = () => {
   for (let i = 0; i < 21; i++) {
     const date = new Date(today);
     date.setDate(today.getDate() + i);
+    date.setHours(0, 0, 0, 0);
 
     const dayIndex = date.getDay();
     const dateNumber = date.getDate();
@@ -29,6 +30,7 @@ const generateDates = () => {
       day: DAYS_OF_WEEK[dayIndex],
       date: dateNumber,
       isToday: i === 0,
+      fullDate: date.toISOString(),
     });
   }
   return datesArray;
@@ -67,7 +69,7 @@ const formatPostDate = (isoDateString) => {
 export default function Home() {
   const supabase = createClient('https://kkzhsaqigwpuzgvszvuz.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtremhzYXFpZ3dwdXpndnN6dnV6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1NTE4NTMsImV4cCI6MjA3NTEyNzg1M30.2_EvGzGXY9dPZrvh4hphWdMYv2miSs0oEBgY8-TVnJQ');
   const insets = useSafeAreaInsets();
-  const datesData = generateDates();
+  const datesData = useMemo(() => generateDates(), []);
   const navigation = useNavigation();
   const params = useLocalSearchParams();
   const {province, districts: districtsString} = params;
@@ -83,14 +85,14 @@ export default function Home() {
   const headcounts = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
 
   let districts = [];
-  if (districtsString) {
-    try {
-      districts = JSON.parse(districtsString); // JSON 문자열 파싱
-    } catch (e) {
-      console.error("Failed to parse districts:", e);
-      districts = [];
-    }
-  }
+  if (districtsString) {
+    try {
+      districts = JSON.parse(districtsString); // JSON 문자열 파싱
+    } catch (e) {
+      console.error("Failed to parse districts:", e);
+      districts = [];
+    }
+  }
 
   const selectDate = (indexNum) => {
     if (!filterDate.includes(indexNum)){
@@ -113,15 +115,15 @@ export default function Home() {
         .select();
 
       if (province && province !== "전체") {
-        query = query.eq('province', province);
-      }
-      
-      if (districts && districts.length > 0) {
-        const filterableDistricts = districts.filter(d => d !== '전체' && d !== '모든 지역');
-        if (filterableDistricts.length > 0) {
-          query = query.in('district', filterableDistricts);
-        }
-      }
+        query = query.eq('province', province);
+      }
+
+      if (districts && districts.length > 0) {
+        const filterableDistricts = districts.filter(d => d !== '전체' && d !== '모든 지역');
+        if (filterableDistricts.length > 0) {
+          query = query.in('district', filterableDistricts);
+        }
+      }
       
       if (filterByMyAge) {
         query = query
@@ -138,6 +140,24 @@ export default function Home() {
           .in('boy_count_max', maxBoyCounts);
       }
 
+      const selectedDateIndices = filterDate.filter(index => index !== -1);
+
+      if (selectedDateIndices.length > 0) {
+        const dateFilters = selectedDateIndices.map(index => {
+          const startDateISO = datesData[index].fullDate;
+          const startDate = new Date(startDateISO);
+
+          const endDate = new Date(startDate);
+          endDate.setDate(startDate.getDate() + 1);
+          const endDateISO = endDate.toISOString();
+
+          return `and(date.gte.${startDateISO}, date.lt.${endDateISO})`;
+        });
+
+        const orFilterString = `or(${dateFilters.join(',')})`;
+        query = query.or(orFilterString);
+      }
+
       const { data, error } = await query;
 
       if (error) {
@@ -147,7 +167,12 @@ export default function Home() {
       setPosts(data || []);
     }
     getPosts();
-  }, [filterByMyAge, filterByHeadcount])
+  }, [
+    filterByMyAge,
+    filterByHeadcount,
+    filterDate,
+    datesData,
+  ])
 
   return (
     <View style={[styles.container, {paddingTop: insets.top + 12}]}>
