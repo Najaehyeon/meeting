@@ -360,11 +360,11 @@ export default function Home() {
                 </Text>
                 <View>
                   <View style={styles.postCondition}>
-                    <Text style={styles.postConditionTitle}>일시</Text>
+                    <Text style={styles.postConditionTitle}>시간</Text>
                     <Text style={styles.postConditionText}>{formatPostDate(post.date)}</Text>
                   </View>
                   <View style={styles.postCondition}>
-                    <Text style={styles.postConditionTitle}>위치</Text>
+                    <Text style={styles.postConditionTitle}>장소</Text>
                     <Text style={styles.postConditionText}>{post.location}</Text>
                   </View>
                   <View style={styles.postCondition}>
