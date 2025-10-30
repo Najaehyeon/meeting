@@ -2,6 +2,7 @@ import { COLORS } from '@/constants/theme';
 import { styles } from '@/styles/post.styles';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -10,6 +11,49 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function Post() {
     const insets = useSafeAreaInsets();
     const [selectedImage, setSelectedImage] = useState(null);
+
+    const [date, setDate] = useState(new Date());
+    const [mode, setMode] = useState('date');
+    const [show, setShow] = useState(false);
+
+    const formatDate = (rawDate) => {
+        const d = new Date(rawDate);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const days = ['일', '월', '화', '수', '목', '금', '토'];
+        const dayName = days[d.getDay()];
+        return `${year}-${month}-${day} (${dayName})`;
+    };
+
+    const formatTime = (rawDate) => {
+        const d = new Date(rawDate);
+        return d.toLocaleTimeString('ko-KR', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        })
+    }
+
+    const onChange = (event, selectedDate) => {
+        const currentDate = selectedDate;
+        setShow(Platform.OS === 'ios');
+        setDate(currentDate);
+    };
+
+    const showMode = (currentMode) => {
+        setShow(true);
+        setMode(currentMode);
+    };
+
+    const showDatepicker = () => {
+        showMode('date');
+    };
+
+    const showTimepicker = () => {
+        showMode('time');
+    };
+
 
     const pickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -71,11 +115,25 @@ export default function Post() {
                             <View>
                                 <Text style={styles.title}>시간</Text>
                                 <View style={styles.timeSetGroup}>
-                                    <TouchableOpacity>
-                                        <Text style={styles.timeSetText}>2025-12-25 (목)</Text>
+                                    <TouchableOpacity
+                                        onPress={showDatepicker}
+                                    >
+                                        <Text style={styles.timeSetText}>{formatDate(date)}</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity>
-                                        <Text style={styles.timeSetText}>8:00 PM</Text>
+                                    <TouchableOpacity
+                                        onPress={showTimepicker}
+                                    >
+                                        <Text style={styles.timeSetText}>{formatTime(date)}</Text>
+                                        {show && (
+                                            <DateTimePicker
+                                                testID="dateTimePicker"
+                                                value={date}
+                                                mode={mode}
+                                                is24Hour={false}
+                                                onChange={onChange}
+                                                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                            />
+                                        )}
                                     </TouchableOpacity>
                                 </View>
                             </View>
