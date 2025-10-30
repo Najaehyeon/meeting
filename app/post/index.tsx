@@ -2,11 +2,33 @@ import { COLORS } from '@/constants/theme';
 import { styles } from '@/styles/post.styles';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import * as ImagePicker from 'expo-image-picker';
+import { useState } from 'react';
+import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Post() {
     const insets = useSafeAreaInsets();
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    const pickImage = async () => {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if ( status !== 'granted') {
+            alert('사진 라이브러리 접근 권한이 필요합니다!');
+        }
+
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+        });
+
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+            setSelectedImage(result.assets[0].uri);
+        }
+    }
 
     return (
         <KeyboardAvoidingView
@@ -17,10 +39,20 @@ export default function Post() {
                     <View style={styles.container}>
                         <ScrollView style={{flex: 1}} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
                             <TouchableOpacity
-                                style={styles.thumbnail}
+                                style={[styles.thumbnail, selectedImage && {padding: 0}]}
                                 activeOpacity={0.6}
+                                onPress={pickImage}
                             >
-                                <Entypo name="camera" size={24} color="black" />
+                                {
+                                    selectedImage ? (
+                                        <Image
+                                            source={{ uri: selectedImage }}
+                                            style={styles.thumbnail}
+                                        />
+                                    ) : (
+                                        <Entypo name="camera" size={24} color="black" />
+                                    )
+                                }
                             </TouchableOpacity>
                             <View>
                                 <Text style={styles.title}>제목</Text>
