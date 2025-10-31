@@ -1,6 +1,7 @@
 import { COLORS } from '@/constants/theme';
+import { styles } from '@/styles/profile.style';
 import { AntDesign, Feather, Ionicons } from '@expo/vector-icons';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // 아이콘 렌더링을 위한 헬퍼 함수
@@ -44,7 +45,7 @@ export default function Profile() {
     return (
         <ScrollView style={styles.container}>
             {/* 1. 상단 프로필 / 로그인 UX 영역 */}
-            <View style={[styles.profileCard, {marginTop: insets.top + 20, marginHorizontal: 10}]}>
+            <View style={[styles.profileCard, {marginTop: insets.top + 20, marginHorizontal: 12}]}>
                 <View style={styles.avatarPlaceholder}>
                     <Ionicons 
                         name="person-circle-outline" 
@@ -96,7 +97,7 @@ export default function Profile() {
                 {/* 매칭/신고 내역 */}
                 {renderMenuItem(
                     "매칭/신고 내역",
-                    "file-text-o",
+                    "file-text",
                     "Feather",
                     false,
                     () => console.log('매칭/신고 내역 클릭')
@@ -130,7 +131,6 @@ export default function Profile() {
                 )}
             </View>
 
-            {/* 3. 하단 버전 정보 및 회사 정보 */}
             <View style={styles.footer}>
                 <Text style={styles.footerText}>버전 1.0.0</Text>
                 <Text style={styles.footerText}>© 2025 미팅하자. All rights reserved.</Text>
@@ -140,107 +140,3 @@ export default function Profile() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLORS.background,
-    },
-    // 1. 상단 프로필 카드 스타일
-    profileCard: {
-        backgroundColor: COLORS.white,
-        padding: 20,
-        borderRadius: 15,
-        alignItems: 'center',
-        shadowColor: COLORS.darkGrey,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
-        elevation: 3,
-        marginBottom: 20,
-    },
-    avatarPlaceholder: {
-        marginBottom: 10,
-    },
-    loginSection: {
-        alignItems: 'center',
-        width: '100%',
-    },
-    welcomeText: {
-        fontSize: 18,
-        fontWeight: '700',
-        color: COLORS.darkGrey,
-        marginBottom: 4,
-    },
-    subText: {
-        fontSize: 14,
-        color: COLORS.grey,
-        textAlign: 'center',
-        marginBottom: 15,
-    },
-    loginButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: COLORS.primary,
-        paddingVertical: 10,
-        paddingHorizontal: 25,
-        borderRadius: 25,
-        marginTop: 10,
-        shadowColor: COLORS.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 5,
-        elevation: 6,
-    },
-    loginButtonText: {
-        color: COLORS.white,
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    
-    // 2. 메뉴 컨테이너 스타일
-    menuContainer: {
-        backgroundColor: COLORS.white,
-        marginHorizontal: 10,
-        borderRadius: 15,
-        overflow: 'hidden',
-        shadowColor: COLORS.darkGrey,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
-        elevation: 3,
-        marginBottom: 20,
-    },
-    menuItem: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingVertical: 15,
-        paddingHorizontal: 20,
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: COLORS.background,
-    },
-    menuLeft: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    menuText: {
-        fontSize: 16,
-        color: COLORS.darkGrey,
-        marginLeft: 15,
-    },
-    highlightText: {
-        fontWeight: '700',
-        color: COLORS.primary,
-    },
-
-    // 3. 푸터 스타일
-    footer: {
-        alignItems: 'center',
-        padding: 20,
-    },
-    footerText: {
-        fontSize: 12,
-        color: COLORS.grey,
-        marginTop: 5,
-    }
-});
