@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function Post() {
     const insets = useSafeAreaInsets();
     const [selectedImage, setSelectedImage] = useState(null);
-
+    const [headcounts, setHeadcounts] = useState(1);
     const [date, setDate] = useState(new Date());
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
@@ -79,7 +79,6 @@ export default function Post() {
             style={{ flex: 1, backgroundColor: "white"}}
             behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
         >
-            <View style={{ flex: 1, backgroundColor: COLORS.white }}>
                     <View style={styles.container}>
                         <ScrollView style={{flex: 1}} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
                             <TouchableOpacity
@@ -160,9 +159,17 @@ export default function Post() {
                             <View style={{flexDirection: "row", justifyContent: "space-between"}}>
                                 <Text style={styles.title}>인원</Text>
                                 <View style={{marginTop: 24, flexDirection: "row"}}>
-                                    <Text style={{fontSize: 20, marginRight: 8}}>남 4명 | 여 4명</Text>
-                                    <TouchableOpacity>
+                                    <Text style={{fontSize: 20, marginRight: 8}}>남 {headcounts}명 | 여 {headcounts}명</Text>
+                                    <TouchableOpacity
+                                        style={{marginRight: 8}}
+                                        onPress={() => {headcounts !== 1 ? setHeadcounts(headcounts - 1) : null}}
+                                    >
                                         <FontAwesome name='angle-down' size={28}/>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={() => {headcounts === 10 ? null : setHeadcounts(headcounts + 1)}}
+                                    >
+                                        <FontAwesome name='angle-up' size={28}/>
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -196,8 +203,6 @@ export default function Post() {
                         <Text style={styles.postText}>게시하기</Text>
                     </TouchableOpacity>
                 </View>
-            </View>
         </KeyboardAvoidingView>
     )
 }
-

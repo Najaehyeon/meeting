@@ -4,7 +4,7 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 24,
+        paddingHorizontal: 24,
         backgroundColor: COLORS.background,
     },
     thumbnail: {
@@ -13,6 +13,7 @@ export const styles = StyleSheet.create({
         alignItems: "center",
         width: 100,
         height: 100,
+        marginTop: 24,
         borderColor: "black",
         borderWidth: 1,
         borderRadius: 10,
@@ -84,6 +85,7 @@ export const styles = StyleSheet.create({
     ageSetGroup: {
         flex: 1,
         flexDirection: "row",
+        marginBottom: 24,
     },
     ageSetColumn: {
         flex: 1,
