@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginHorizontal: 12,
+    marginHorizontal: 20,
   },
   title: {
     fontSize: 32,
